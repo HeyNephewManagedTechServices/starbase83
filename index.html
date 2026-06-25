@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Starbase 83 | Command Projects Interface</title>
     
+<!-- Favicon Integration -->
+    <link rel="icon" type="image/png" href="sb83favicon.png">
+    
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -442,11 +445,20 @@
                     
                     const description = repo.description || "No description provided in telemetry logs.";
 
+                    // DYNAMIC BUTTON LOGIC: Check if the 'Website' field is filled out in GitHub
+                    const liveDeploymentBtn = repo.homepage 
+                        ? `<a href="${repo.homepage.startsWith('http') ? repo.homepage : 'https://' + repo.homepage}" target="_blank" class="action-btn green" style="box-shadow: 0 0 10px rgba(53, 255, 105, 0.2);">Live Deployment</a>` 
+                        : '';
+
+                    // If we have a live site, make that the green primary button. Otherwise, keep Prospectus green.
+                    const prospectusClass = repo.homepage ? 'action-btn' : 'action-btn green';
+
                     card.innerHTML = `
                         <div class="repo-title">${repo.name}</div>
                         <div class="repo-desc">${description}</div>
-                        <div class="card-actions">
-                            <button class="action-btn green" onclick="openProspectus('${repo.name}')">View Prospectus</button>
+                        <div class="card-actions" style="flex-wrap: wrap;">
+                            ${liveDeploymentBtn}
+                            <button class="${prospectusClass}" onclick="openProspectus('${repo.name}')">Prospectus</button>
                             <a href="${repo.html_url}" target="_blank" class="action-btn">Source Code</a>
                         </div>
                     `;
