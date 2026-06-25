@@ -231,28 +231,37 @@
         }
 
         .card-actions {
-            display: flex;
+            display: grid;
+            /* Automatically sizes columns, scaling perfectly if 2 or 3 buttons are present */
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
             gap: 10px;
             border-top: 1px dashed rgba(16, 152, 247, 0.3);
             padding-top: 15px;
+            width: 100%;
         }
 
         .action-btn {
-            flex: 1;
-            background: transparent;
+            width: 100%;
+            background: rgba(16, 152, 247, 0.1);
             color: var(--primary-accent);
             border: 1px solid var(--primary-accent);
-            padding: 8px;
-            font-size: 12px;
+            padding: 10px 5px;
+            font-size: 14px;
             font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.2s;
+            
+            /* The real alignment fix */
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
             text-decoration: none;
+            min-height: 40px; /* Forces a consistent matching height across tags */
         }
-
+        
         .action-btn:hover {
             background: var(--primary-accent);
             color: var(--bg-dark);
@@ -261,6 +270,7 @@
         .action-btn.green {
             color: var(--hover-green);
             border-color: var(--hover-green);
+            background: rgba(53, 255, 105, 0.05);
         }
 
         .action-btn.green:hover {
@@ -447,21 +457,13 @@
 
                     // DYNAMIC BUTTON LOGIC: Check if the 'Website' field is filled out in GitHub
                     const liveDeploymentBtn = repo.homepage 
-                        ? `<a href="${repo.homepage.startsWith('http') ? repo.homepage : 'https://' + repo.homepage}" target="_blank" class="action-btn green" style="box-shadow: 0 0 10px rgba(53, 255, 105, 0.2);">Live Deployment</a>` 
-                        : '';
+    ? `<a href="${repo.homepage.startsWith('http') ? repo.homepage : 'https://' + repo.homepage}" target="_blank" class="action-btn green">Live Deployment</a>` 
+    : '';
 
                     // If we have a live site, make that the green primary button. Otherwise, keep Prospectus green.
                     const prospectusClass = repo.homepage ? 'action-btn' : 'action-btn green';
 
-                    card.innerHTML = `
-                        <div class="repo-title">${repo.name}</div>
-                        <div class="repo-desc">${description}</div>
-                        <div class="card-actions" style="flex-wrap: wrap;">
-                            ${liveDeploymentBtn}
-                            <button class="${prospectusClass}" onclick="openProspectus('${repo.name}')">Prospectus</button>
-                            <a href="${repo.html_url}" target="_blank" class="action-btn">Source Code</a>
-                        </div>
-                    `;
+                    card.innerHTML = `<div class="repo-title">${repo.name}</div><div class="repo-desc">${description}</div><div class="card-actions">${liveDeploymentBtn}<button class="${prospectusClass}" onclick="openProspectus('${repo.name}')">Prospectus</button><a href="${repo.html_url}" target="_blank" class="action-btn">Source Code</a></div>`;
                     gridContainer.appendChild(card);
                 });
 
