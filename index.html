@@ -342,12 +342,13 @@
         }
 
         .modal-body {
-            padding: 30px;
-            overflow-y: auto;
-            color: var(--text-light);
-            line-height: 1.6;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        }
+    padding: 30px;
+    overflow-y: auto;
+    color: var(--text-light);
+    line-height: 1.6;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    white-space: pre-line; /* This tells the browser: "Respect the enters/line breaks" */
+}
 
         .modal-body h1, .modal-body h2, .modal-body h3 {
             color: var(--primary-accent);
