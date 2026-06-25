@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Starbase 83 | Command Projects Interface</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 1. CORE VARIABLES & RESET --- */
+        :root {
+            --bg-dark: #12263A;
+            --primary-accent: #1098F7;
+            --text-light: #F0F6F6;
+            --hover-green: #35FF69;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'League Spartan', sans-serif;
+        }
+
+        /* --- 2. THE ENVIRONMENT --- */
+        body {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--bg-dark),
+                var(--bg-dark) 20px,
+                #0f1f30 20px,
+                #0f1f30 40px
+            );
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            overflow: hidden;
+        }
+
+        /* --- 3. THE MASTER LAYOUT --- */
+        .starbase-app {
+            width: 1400px;
+            max-width: 95vw;
+            height: 95vh;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* --- 4. THE GLASSMORPHISM ENGINE --- */
+        .glass-panel {
+            background: rgba(16, 152, 247, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 152, 247, 0.3);
+            border-radius: 8px; 
+            box-shadow: inset 0 0 20px rgba(16, 152, 247, 0.05), 
+                        0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- 5. ELEMENT 1: ID BAR (HEADER) --- */
+        .element-1 {
+            padding: 30px;
+            text-align: center;
+            border-top: 4px solid var(--primary-accent);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .element-1 h1 {
+            color: var(--text-light);
+            font-weight: 900;
+            font-size: 42px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(16, 152, 247, 0.4);
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 16px;
+            letter-spacing: 3px;
+            font-weight: 300;
+            opacity: 0.8;
+            text-transform: uppercase;
+            min-height: 20px;
+        }
+
+        /* The Blinking Cursor Animation */
+        .blink {
+            animation: blinker 1s step-start infinite;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        /* The Neon Glow Animation for "Secure Connection Established" */
+        .glow-text {
+            color: var(--hover-green);
+            font-weight: bold;
+            animation: pulse-glow 2s infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            0% {
+                text-shadow: 0 0 5px var(--hover-green), 0 0 10px var(--hover-green);
+            }
+            100% {
+                text-shadow: 0 0 10px var(--hover-green), 0 0 20px var(--hover-green), 0 0 30px rgba(53, 255, 105, 0.8);
+            }
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Nav Buttons */
+        .nav-btn {
+            background: rgba(16, 152, 247, 0.1); 
+            color: var(--primary-accent);
+            border: 1px solid var(--primary-accent);
+            padding: 12px 30px;
+            border-radius: 30px; 
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn:hover {
+            background: var(--hover-green);
+            color: var(--bg-dark); 
+            border-color: var(--hover-green);
+            box-shadow: 0 0 20px rgba(53, 255, 105, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* --- 6. ELEMENT 2: PROJECTS GRID --- */
+        .element-2 {
+            flex-grow: 1;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-top: 4px solid var(--primary-accent);
+        }
+
+        .grid-header {
+            color: var(--text-light);
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed rgba(16, 152, 247, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .projects-grid::-webkit-scrollbar, .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+        .projects-grid::-webkit-scrollbar-track, .modal-body::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2); 
+        }
+        .projects-grid::-webkit-scrollbar-thumb, .modal-body::-webkit-scrollbar-thumb {
+            background: var(--primary-accent); 
+            border-radius: 4px;
+        }
+
+        .repo-card {
+            background: rgba(18, 38, 58, 0.7); 
+            border: 1px solid rgba(16, 152, 247, 0.4);
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .repo-card:hover {
+            border-color: var(--hover-green);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 15px rgba(53, 255, 105, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .repo-title {
+            color: var(--text-light);
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .repo-title::before {
+            content: '■';
+            color: var(--primary-accent);
+            font-size: 14px;
+        }
+
+        .repo-desc {
+            color: rgba(240, 246, 246, 0.7);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            border-top: 1px dashed rgba(16, 152, 247, 0.3);
+            padding-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            background: transparent;
+            color: var(--primary-accent);
+            border: 1px solid var(--primary-accent);
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-accent);
+            color: var(--bg-dark);
+        }
+
+        .action-btn.green {
+            color: var(--hover-green);
+            border-color: var(--hover-green);
+        }
+
+        .action-btn.green:hover {
+            background: var(--hover-green);
+            color: var(--bg-dark);
+            box-shadow: 0 0 10px rgba(53, 255, 105, 0.4);
+        }
+
+        /* --- 7. THE PROSPECTUS & DOSSIER MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 38, 58, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-glass {
+            width: 1000px;
+            max-width: 90vw;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            background: rgba(18, 38, 58, 0.95);
+            border: 1px solid var(--primary-accent);
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 2px solid var(--primary-accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(16, 152, 247, 0.1);
+        }
+
+        .modal-header h2 {
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .close-btn {
+            background: transparent;
+            color: #ff3333;
+            border: 1px solid #ff3333;
+            padding: 8px 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #ff3333;
+            color: var(--text-light);
+            box-shadow: 0 0 15px rgba(255,51,51,0.5);
+        }
+
+        .modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            color: var(--text-light);
+            line-height: 1.6;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        .modal-body h1, .modal-body h2, .modal-body h3 {
+            color: var(--primary-accent);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(16, 152, 247, 0.2);
+            padding-bottom: 5px;
+            font-family: 'League Spartan', sans-serif;
+        }
+        
+        .modal-body a { color: var(--hover-green); }
+        .modal-body pre { background: #050B14; padding: 15px; border-radius: 4px; overflow-x: auto; margin: 15px 0; border: 1px solid rgba(255,255,255,0.1); }
+        .modal-body code { font-family: 'Courier New', Courier, monospace; color: var(--hover-green); }
+        .modal-body img { max-width: 100%; height: auto; border-radius: 4px; margin: 15px 0; }
+        .modal-body ul, .modal-body ol { margin-left: 20px; margin-bottom: 15px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="starbase-app">
+        
+        <header class="glass-panel element-1">
+            <h1>Starbase 83 Projects Interface</h1>
+            
+            <p class="subtitle" id="boot-sequence"></p>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="openCommandLog()">Command Log</button>
+                <button class="nav-btn" onclick="window.open('https://www.linkedin.com/in/joeypatrick/', '_blank')">Networking Conduit</button>
+                <button class="nav-btn" onclick="window.open('mailto:josbpatrick@gmail.com?subject=Secure%20Channel%20Inquiry:%20Solutions%20Engineering', '_blank')">Communications Relay</button>
+                <button class="nav-btn" onclick="window.open('https://github.com/HeyNephewManagedTechServices', '_blank')">Codebase</button>
+            </div>
+        </header>
+
+        <main class="glass-panel element-2">
+            <div class="grid-header">LIVE DEPLOYMENTS & REPOSITORIES</div>
+            
+            <div id="github-grid" class="projects-grid">
+                </div>
+        </main>
+
+    </div>
+
+    <div id="prospectus-modal" class="modal-overlay">
+        <div class="glass-panel modal-glass">
+            <div class="modal-header">
+                <h2 id="modal-title">PROJECT LOGS</h2>
+                <button id="close-modal" class="close-btn">[ CLOSE CHANNEL ]</button>
+            </div>
+            <div id="readme-content" class="modal-body">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // GITHUB CONFIGURATION
+        // ==========================================
+        const GITHUB_USERNAME = 'HeyNephewManagedTechServices';
+        
+        // --- 1. BOOT SEQUENCE LOGIC ---
+        function runBootSequence() {
+            const bootText = document.getElementById('boot-sequence');
+            
+            // Phase 1: Initializing
+            bootText.innerHTML = 'INITIALIZING <span class="blink">_</span>';
+            
+            // Phase 2: Routing Protocols (after 1.2 seconds)
+            setTimeout(() => {
+                bootText.innerHTML = 'ROUTING PROTOCOLS <span class="blink">_</span>';
+            }, 1200);
+
+            // Phase 3: Secure Connection Established (after 2.6 seconds)
+            setTimeout(() => {
+                // We apply the new glow-text class here!
+                bootText.innerHTML = '<span class="glow-text">SECURE CONNECTION ESTABLISHED</span>';
+                
+                // Trigger the GitHub fetch ONLY after the connection is "established"
+                fetchGitHubProjects();
+            }, 2600);
+        }
+
+        const gridContainer = document.getElementById('github-grid');
+        const modal = document.getElementById('prospectus-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('readme-content');
+        const closeModal = document.getElementById('close-modal');
+
+        // --- 2. GITHUB FETCH LOGIC ---
+        async function fetchGitHubProjects() {
+            gridContainer.innerHTML = '<div style="color: var(--primary-accent); width: 100%; text-align: center; padding: 40px;">> Synchronizing telemetry with GitHub API...</div>';
+            
+            try {
+                const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated`);
+                const repos = await response.json();
+
+                if (!response.ok) throw new Error(repos.message);
+
+                gridContainer.innerHTML = ''; 
+
+                repos.forEach(repo => {
+                    const card = document.createElement('div');
+                    card.className = 'repo-card';
+                    
+                    const description = repo.description || "No description provided in telemetry logs.";
+
+                    card.innerHTML = `
+                        <div class="repo-title">${repo.name}</div>
+                        <div class="repo-desc">${description}</div>
+                        <div class="card-actions">
+                            <button class="action-btn green" onclick="openProspectus('${repo.name}')">View Prospectus</button>
+                            <a href="${repo.html_url}" target="_blank" class="action-btn">Source Code</a>
+                        </div>
+                    `;
+                    gridContainer.appendChild(card);
+                });
+
+            } catch (error) {
+                gridContainer.innerHTML = `<div style="color: #ff3333; width: 100%; text-align: center; padding: 40px;">> CRITICAL ERROR: Unable to fetch telemetry. Check API routing.</div>`;
+            }
+        }
+
+        // --- 3. PROSPECTUS MODAL LOGIC ---
+        async function openProspectus(repoName) {
+            modalTitle.innerText = `${repoName} // PROSPECTUS`;
+            modalBody.innerHTML = `<div style="color: var(--primary-accent);">> Decrypting secure logs for ${repoName}...</div>`;
+            modal.classList.add('active');
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${repoName}/readme`, {
+                    headers: { 'Accept': 'application/vnd.github.html+json' }
+                });
+
+                if (response.ok) {
+                    const htmlContent = await response.text();
+                    modalBody.innerHTML = htmlContent;
+                } else {
+                    modalBody.innerHTML = `<div style="color: var(--primary-accent);">> ALERT: No README.md (Prospectus) file found in the root directory of this repository.</div>`;
+                }
+            } catch (error) {
+                modalBody.innerHTML = `<div style="color: #ff3333;">> CRITICAL ERROR: Comm link failed.</div>`;
+            }
+        }
+
+        // --- 4. DOSSIER MODAL LOGIC ---
+        function openCommandLog() {
+            modalTitle.innerText = `COMMAND LOG // J. PATRICK`;
+            
+            modalBody.innerHTML = `
+                <div style="margin-bottom: 25px; border-left: 3px solid var(--hover-green); padding-left: 15px;">
+                    <h2 style="margin-top: 0; color: var(--text-light);">JOSEPH BRANTLEY PATRICK</h2>
+                    <p style="color: var(--primary-accent); font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">Solutions Engineer // Azure Architecture // Operations Specialist</p>
+                    <p style="color: rgba(240, 246, 246, 0.7); font-size: 14px; margin-top: 5px;">BASE OF OPERATIONS: Warner Robins, GA</p>
+                </div>
+
+                <h3>SYSTEMS INITIALIZATION [BACKGROUND]</h3>
+                <p style="margin-bottom: 15px;">My journey into technical architecture didn't start in a server room—it started in high-pressure triage and rapid-deployment logistics. From managing emergency communications as a 911 Dispatcher to orchestrating unit operations in high-volume environments, I learned early how to manage chaos, map dependencies, and execute solutions when downtime is not an option.</p>
+                
+                <p style="margin-bottom: 15px;">Holding a Master of Arts in History, I naturally gravitate toward deep-dive analysis and counterfactual "what-if" scenarios. This translates directly to my technical approach: anticipating system failures before they happen and architecting resilient infrastructures.</p>
+
+                <h3>CURRENT DEPLOYMENT [HEY NEPHEW & BEYOND]</h3>
+                <p style="margin-bottom: 15px;">As the founder and principal consultant of Hey Nephew Managed Tech Services, I architect, integrate, and troubleshoot complex stacks for digitally dependent businesses. My current operational focus is heavily invested in Microsoft Azure (tracking AZ-900, AZ-104, and AZ-305 certifications) and Google Workspace administration.</p>
+
+                <p style="margin-bottom: 15px;">The objective of this interface is simple: to demonstrate the intersection of operational leadership, technical sales engineering, and hands-on cloud architecture.</p>
+
+                <h3>OFFLINE TELEMETRY</h3>
+                <p>When not configuring virtual networks or building CI/CD pipelines, I can be found directing historical research and logistical support at the Museum of Aviation, managing long-term server projects in Minecraft, or analyzing 20th-century American history.</p>
+            `;
+            
+            modal.classList.add('active');
+        }
+
+        // Modal Close Triggers
+        closeModal.addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('active');
+        });
+
+        // --- 5. INITIALIZE THE APP ---
+        runBootSequence();
+
+    </script>
+</body>
+</html>
